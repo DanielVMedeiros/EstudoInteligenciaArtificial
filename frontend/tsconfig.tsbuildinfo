@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/api.ts","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/citationpopover.tsx","./src/components/csvupload.tsx"],"errors":true,"version":"5.8.3"}
