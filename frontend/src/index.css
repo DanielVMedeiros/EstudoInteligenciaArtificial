@@ -1,0 +1,342 @@
+:root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f4f1ec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+.hero p,
+.muted {
+  color: #5c5c5c;
+}
+
+.layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+textarea,
+input,
+select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8d2c8;
+  border-radius: 8px;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tags-fieldset {
+  border: 1px solid #e8e2d8;
+  border-radius: 8px;
+  padding: 0.75rem 1rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.75rem;
+  font-weight: normal;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.1rem;
+  font: inherit;
+  cursor: pointer;
+  background: #c45d2c;
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: #ece7df;
+  color: #333;
+}
+
+.results {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ece7df;
+}
+
+.empty-state,
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 1rem;
+  border: 3px solid #ece7df;
+  border-top-color: #c45d2c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error,
+.error-state p:first-child {
+  color: #b42318;
+}
+
+.answer-text {
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+}
+
+.citation-link {
+  background: none;
+  color: #c45d2c;
+  padding: 0;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.citations ul,
+.recipes ul,
+.ingestion-result ul {
+  padding-left: 1.2rem;
+}
+
+.upload-form {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.upload-form input[type="file"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+.error-list {
+  color: #b42318;
+}
+
+.popover-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.popover {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.popover header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.popover header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.popover header button {
+  background: #ece7df;
+  color: #333;
+  padding: 0.25rem 0.55rem;
+  line-height: 1;
+}
+
+.popover-body {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-button {
+  background: #ece7df;
+  color: #333;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.menu-card {
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  color: #1a1a1a;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.1);
+}
+
+.menu-card h2 {
+  margin: 0 0 0.5rem;
+  color: #c45d2c;
+  font-size: 1.25rem;
+}
+
+.menu-card p {
+  margin: 0;
+  color: #5c5c5c;
+}
+
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ingestion-progress {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ddd;
+  border-top-color: #555;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.progress-label {
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.progress-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9em;
+}
+
+.progress-steps .done {
+  color: #2e7d32;
+}
+
+.progress-steps .active {
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.progress-steps .pending {
+  color: #999;
+}
