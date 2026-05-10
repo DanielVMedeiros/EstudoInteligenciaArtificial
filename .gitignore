@@ -1,0 +1,8 @@
+.env
+backend/data/recipes.json
+backend/data/faiss.index
+backend/data/faiss_meta.json
+node_modules/
+dist/
+.venv/
+__pycache__/
