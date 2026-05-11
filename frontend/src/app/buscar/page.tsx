@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import * as Select from "@radix-ui/react-select";
 import * as Slider from "@radix-ui/react-slider";
-import * as Checkbox from "@radix-ui/react-checkbox";
-import * as Label from "@radix-ui/react-label";
 import { searchRecipes } from "@/lib/api";
 import type { Categoria, CitationItem, QueryFilters } from "@/lib/types";
 import { CitationDialog } from "@/components/citation-dialog";
@@ -19,6 +17,14 @@ const CATEGORIAS: { value: Categoria; label: string }[] = [
 ];
 
 const TAGS = ["vegano", "sem_lactose", "sem_gluten", "rapido", "vegetariano"];
+
+const STAGGER = [
+  "anim-delay-50",
+  "anim-delay-100",
+  "anim-delay-150",
+  "anim-delay-200",
+  "anim-delay-250",
+] as const;
 
 export default function BuscarPage() {
   const [pergunta, setPergunta] = useState("");
@@ -62,7 +68,7 @@ export default function BuscarPage() {
           key={i}
           type="button"
           onClick={() => setActiveCitation(cit)}
-          className="inline-block px-1 py-0.5 text-amber-700 bg-amber-50 border border-amber-200 rounded text-sm font-semibold hover:bg-amber-100 transition-colors cursor-pointer"
+          className="citation-badge"
         >
           {part}
         </button>
@@ -73,208 +79,249 @@ export default function BuscarPage() {
   const canSearch = pergunta.trim().length > 0 && pergunta.length <= 500;
 
   return (
-    <main className="min-h-screen py-10 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-stone-900">Buscador de Receitas</h1>
-            <p className="text-stone-500 mt-1 text-sm">
-              Pergunte em linguagem natural e receba sugestões com citações rastreáveis.
-            </p>
-          </div>
-          <Link
-            href="/upload"
-            className="shrink-0 text-sm text-amber-700 hover:text-amber-900 hover:underline transition-colors"
-          >
-            Cadastrar receitas →
-          </Link>
-        </header>
+    <main className="min-h-screen px-4 pb-20">
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-5"
+      {/* ─── Hero ─── */}
+      <header className="text-center pt-16 pb-10">
+        <div className="eyebrow-badge anim-fade-down">
+          <span aria-hidden="true">✦</span>
+          Busca com Inteligência Artificial
+        </div>
+        <h1 className="anim-fade-up anim-delay-100 font-serif text-5xl sm:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-gradient">
+          Buscador de Receitas
+        </h1>
+        <p className="anim-fade-up anim-delay-200 text-stone-400 text-base max-w-md mx-auto leading-relaxed">
+          Pergunte em linguagem natural e receba sugestões com citações rastreáveis.
+        </p>
+        <Link
+          href="/upload"
+          className="anim-fade-up anim-delay-300 inline-block mt-5 text-sm text-orange-500/60 hover:text-orange-400 transition-colors duration-200"
         >
-          {/* Pergunta */}
-          <div className="space-y-1.5">
-            <Label.Root
-              htmlFor="pergunta"
-              className="text-sm font-medium text-stone-700"
-            >
-              O que você procura?
-            </Label.Root>
-            <textarea
-              id="pergunta"
-              value={pergunta}
-              onChange={(e) => setPergunta(e.target.value)}
-              placeholder='"sobremesa com chocolate sem leite"'
-              rows={3}
-              maxLength={500}
-              className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder:text-stone-300"
-            />
-            <p className="text-xs text-stone-400 text-right">{pergunta.length}/500</p>
-          </div>
+          Cadastrar receitas →
+        </Link>
+      </header>
 
-          {/* Filtros em grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Categoria */}
-            <div className="space-y-1.5">
-              <Label.Root className="text-sm font-medium text-stone-700">
-                Categoria
-              </Label.Root>
-              <Select.Root
-                value={categoria === "" ? "all" : categoria}
-                onValueChange={(v) => setCategoria(v === "all" ? "" : (v as Categoria))}
+      <div className="max-w-2xl mx-auto space-y-4">
+
+        {/* ─── Form card ─── */}
+        <div className="glass rounded-2xl p-6 anim-slide-up anim-delay-200">
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* Pergunta */}
+            <div className="space-y-2">
+              <label
+                htmlFor="pergunta"
+                className="block text-[0.7rem] font-bold tracking-[0.12em] uppercase text-stone-500"
               >
-                <Select.Trigger className="w-full flex items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 text-stone-700">
-                  <Select.Value placeholder="Todas" />
-                  <Select.Icon className="text-stone-400 text-xs">▾</Select.Icon>
-                </Select.Trigger>
-                <Select.Portal>
-                  <Select.Content
-                    position="popper"
-                    className="bg-white rounded-xl shadow-lg border border-stone-200 z-50 w-full"
-                  >
-                    <Select.Viewport className="p-1">
-                      <Select.Item
-                        value="all"
-                        className="px-3 py-2 text-sm rounded-lg cursor-pointer hover:bg-stone-50 focus:outline-none focus:bg-stone-50 text-stone-500"
-                      >
-                        <Select.ItemText>Todas</Select.ItemText>
-                      </Select.Item>
-                      {CATEGORIAS.map((c) => (
-                        <Select.Item
-                          key={c.value}
-                          value={c.value}
-                          className="px-3 py-2 text-sm rounded-lg cursor-pointer hover:bg-stone-50 focus:outline-none focus:bg-stone-50"
-                        >
-                          <Select.ItemText>{c.label}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select.Portal>
-              </Select.Root>
+                O que você procura?
+              </label>
+              <textarea
+                id="pergunta"
+                value={pergunta}
+                onChange={(e) => setPergunta(e.target.value)}
+                placeholder='"sobremesa com chocolate sem leite"'
+                rows={3}
+                maxLength={500}
+                className="form-input px-4 py-3 resize-none"
+              />
+              <p className="text-[0.72rem] text-stone-600 text-right">{pergunta.length}/500</p>
             </div>
 
-            {/* Tempo máximo */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label.Root className="text-sm font-medium text-stone-700">
-                  Tempo máx.
-                </Label.Root>
-                <label className="flex items-center gap-1.5 text-xs text-stone-500 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={tempoEnabled}
-                    onChange={(e) => setTempoEnabled(e.target.checked)}
-                    className="rounded border-stone-300"
-                  />
-                  {tempoEnabled ? `${tempoMax} min` : "desligado"}
+            {/* Filtros */}
+            <div className="grid grid-cols-2 gap-4">
+
+              {/* Categoria */}
+              <div className="space-y-2">
+                <label className="block text-[0.7rem] font-bold tracking-[0.12em] uppercase text-stone-500">
+                  Categoria
                 </label>
+                <Select.Root
+                  value={categoria === "" ? "all" : categoria}
+                  onValueChange={(v) => setCategoria(v === "all" ? "" : (v as Categoria))}
+                >
+                  <Select.Trigger className="form-input flex items-center justify-between px-4 py-2.5 data-[placeholder]:text-stone-500 text-stone-300">
+                    <Select.Value placeholder="Todas" />
+                    <Select.Icon className="text-stone-500 text-xs ml-2 shrink-0">▾</Select.Icon>
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content
+                      position="popper"
+                      sideOffset={6}
+                      className="z-50 w-[var(--radix-select-trigger-width)] rounded-xl border border-stone-700/70 bg-[#1a1714] shadow-2xl overflow-hidden"
+                    >
+                      <Select.Viewport className="p-1.5">
+                        <Select.Item
+                          value="all"
+                          className="px-3 py-2 text-sm rounded-lg cursor-pointer text-stone-400 hover:bg-white/5 focus:outline-none focus:bg-white/5 transition-colors"
+                        >
+                          <Select.ItemText>Todas</Select.ItemText>
+                        </Select.Item>
+                        {CATEGORIAS.map((c) => (
+                          <Select.Item
+                            key={c.value}
+                            value={c.value}
+                            className="px-3 py-2 text-sm rounded-lg cursor-pointer text-stone-300 hover:bg-orange-500/10 hover:text-orange-400 focus:outline-none focus:bg-orange-500/10 focus:text-orange-400 transition-colors"
+                          >
+                            <Select.ItemText>{c.label}</Select.ItemText>
+                          </Select.Item>
+                        ))}
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
               </div>
-              <Slider.Root
-                disabled={!tempoEnabled}
-                min={5}
-                max={120}
-                step={5}
-                value={[tempoMax]}
-                onValueChange={([v]) => setTempoMax(v)}
-                className="relative flex items-center select-none w-full h-6"
-              >
-                <Slider.Track className="bg-stone-200 relative grow rounded-full h-1.5">
-                  <Slider.Range className="absolute bg-amber-400 rounded-full h-full" />
-                </Slider.Track>
-                <Slider.Thumb
-                  aria-label="Tempo máximo"
-                  className="block w-4 h-4 bg-white border-2 border-amber-400 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-40"
-                />
-              </Slider.Root>
-            </div>
-          </div>
 
-          {/* Tags */}
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-stone-700">Tags</p>
-            <div className="flex flex-wrap gap-3">
-              {TAGS.map((tag) => (
-                <div key={tag} className="flex items-center gap-1.5">
-                  <Checkbox.Root
-                    id={`tag-${tag}`}
-                    checked={tags.includes(tag)}
-                    onCheckedChange={() => toggleTag(tag)}
-                    className="w-4 h-4 rounded border border-stone-300 bg-white flex items-center justify-center data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                  >
-                    <Checkbox.Indicator className="text-white text-[10px] font-bold leading-none">
-                      ✓
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
-                  <Label.Root
-                    htmlFor={`tag-${tag}`}
-                    className="text-sm text-stone-600 cursor-pointer select-none"
-                  >
-                    {tag}
-                  </Label.Root>
+              {/* Tempo máximo */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[0.7rem] font-bold tracking-[0.12em] uppercase text-stone-500">
+                    Tempo máx.
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={tempoEnabled}
+                      onChange={(e) => setTempoEnabled(e.target.checked)}
+                      className="rounded border-stone-600 accent-orange-500 w-3.5 h-3.5"
+                    />
+                    <span className={`text-xs font-medium transition-colors ${tempoEnabled ? "text-orange-400" : "text-stone-600"}`}>
+                      {tempoEnabled ? `${tempoMax} min` : "desligado"}
+                    </span>
+                  </label>
                 </div>
-              ))}
+                <Slider.Root
+                  disabled={!tempoEnabled}
+                  min={5}
+                  max={120}
+                  step={5}
+                  value={[tempoMax]}
+                  onValueChange={([v]) => setTempoMax(v)}
+                  className="relative flex items-center select-none w-full h-6"
+                >
+                  <Slider.Track className="bg-stone-700/60 relative grow rounded-full h-1.5">
+                    <Slider.Range
+                      className={`absolute rounded-full h-full transition-all ${
+                        tempoEnabled ? "bg-gradient-to-r from-orange-500 to-orange-400" : "bg-stone-600"
+                      }`}
+                    />
+                  </Slider.Track>
+                  <Slider.Thumb
+                    aria-label="Tempo máximo"
+                    className="block w-4 h-4 bg-[#0c0a09] border-2 border-orange-500 rounded-full shadow-lg shadow-orange-500/25 focus:outline-none focus:ring-2 focus:ring-orange-500/35 disabled:opacity-25 disabled:cursor-not-allowed transition-all hover:scale-110"
+                  />
+                </Slider.Root>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={!canSearch || isPending}
-            className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
-          >
-            {isPending ? "Buscando…" : "Buscar"}
-          </button>
-        </form>
+            {/* Tags */}
+            <div className="space-y-2.5">
+              <p className="text-[0.7rem] font-bold tracking-[0.12em] uppercase text-stone-500">Tags</p>
+              <div className="flex flex-wrap gap-2">
+                {TAGS.map((tag) => {
+                  const active = tags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`
+                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
+                        border transition-all duration-200 select-none
+                        ${active
+                          ? "bg-orange-500/13 border-orange-500/44 text-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.18)] scale-105"
+                          : "bg-white/4 border-stone-700/50 text-stone-500 hover:border-stone-600/80 hover:text-stone-300 hover:bg-white/6"
+                        }
+                      `}
+                    >
+                      {active && (
+                        <span className="text-[9px] font-black leading-none">✓</span>
+                      )}
+                      {tag.replace(/_/g, " ")}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-        {/* Estados */}
+            <button
+              type="submit"
+              disabled={!canSearch || isPending}
+              className="btn-glow w-full py-3 rounded-xl text-sm"
+            >
+              <span>{isPending ? "Buscando…" : "Buscar receitas"}</span>
+            </button>
+          </form>
+        </div>
+
+        {/* ─── Idle ─── */}
         {isIdle && (
-          <p className="text-center text-stone-400 text-sm">
+          <p className="anim-fade-in text-center text-stone-600 text-sm py-6">
             Descreva o que você quer cozinhar — ingredientes, restrições ou tipo de prato.
           </p>
         )}
 
+        {/* ─── Loading ─── */}
         {isPending && (
-          <p className="text-center text-stone-500 text-sm animate-pulse">
-            Buscando receitas relevantes…
-          </p>
+          <div className="anim-fade-in text-center py-10 space-y-4">
+            <div className="dot-loader">
+              <span /><span /><span />
+            </div>
+            <p className="text-stone-500 text-sm">Buscando receitas relevantes…</p>
+          </div>
         )}
 
+        {/* ─── Erro ─── */}
         {isError && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p className="text-sm text-red-700">
+          <div className="anim-slide-up glass rounded-2xl p-5 border border-red-500/20">
+            <p className="text-sm text-red-400 font-medium">
               {(error as Error)?.message ?? "Erro ao buscar receitas"}
             </p>
-            <p className="text-xs text-red-400 mt-1">
+            <p className="text-xs text-stone-600 mt-1.5">
               Verifique a conexão com a API e tente novamente.
             </p>
           </div>
         )}
 
-        {data && (
-          <article className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-4">
+        {/* ─── Resultado ─── */}
+        {data && !isPending && (
+          <article className="glass rounded-2xl p-6 space-y-6 anim-slide-up">
             {data.citacoes.length === 0 ? (
-              <p className="text-stone-500 text-sm">{data.resposta}</p>
+              <p className="text-stone-400 text-sm">{data.resposta}</p>
             ) : (
               <>
-                <p className="text-stone-800 leading-relaxed text-sm">
-                  {renderAnswer(data.resposta, data.citacoes)}
-                </p>
+                {/* Resposta */}
+                <div>
+                  <h2 className="text-[0.68rem] font-bold tracking-[0.13em] uppercase text-stone-600 mb-3">
+                    Resposta
+                  </h2>
+                  <p className="text-stone-200 leading-relaxed text-sm anim-fade-in anim-delay-100">
+                    {renderAnswer(data.resposta, data.citacoes)}
+                  </p>
+                </div>
 
-                <div className="border-t border-stone-100 pt-4 space-y-1">
-                  <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-2">
+                {/* Fontes */}
+                <div className="border-t border-stone-700/50 pt-5">
+                  <h2 className="text-[0.68rem] font-bold tracking-[0.13em] uppercase text-stone-600 mb-3">
                     Fontes
                   </h2>
-                  <ul className="space-y-1">
-                    {data.citacoes.map((cit) => (
-                      <li key={cit.n}>
+                  <ul className="space-y-1.5">
+                    {data.citacoes.map((cit, idx) => (
+                      <li
+                        key={cit.n}
+                        className={`anim-fade-in ${STAGGER[idx] ?? "anim-delay-300"}`}
+                      >
                         <button
                           type="button"
                           onClick={() => setActiveCitation(cit)}
-                          className="text-sm text-amber-700 hover:text-amber-900 hover:underline text-left transition-colors"
+                          className="group flex items-center gap-2.5 w-full text-left px-3 py-2.5 rounded-xl hover:bg-orange-500/8 border border-transparent hover:border-orange-500/20 transition-all duration-200"
                         >
-                          [{cit.n}] {cit.titulo}
+                          <span className="citation-badge shrink-0">[{cit.n}]</span>
+                          <span className="text-sm text-stone-400 group-hover:text-orange-400 transition-colors duration-200 truncate">
+                            {cit.titulo}
+                          </span>
+                          <span className="ml-auto text-stone-700 group-hover:text-orange-500 transition-colors text-xs shrink-0">
+                            →
+                          </span>
                         </button>
                       </li>
                     ))}
