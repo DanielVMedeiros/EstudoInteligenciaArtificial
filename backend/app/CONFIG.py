@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://recipe:recipe@localhost:5432/recipe"
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
+    qdrant_api_key: str = ""
+    qdrant_https: bool = False
     qdrant_collection: str = "receitas"
 
     cors_origins: list[str] = ["http://localhost:3000"]

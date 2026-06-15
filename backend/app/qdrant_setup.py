@@ -7,8 +7,12 @@ VECTOR_SIZE = settings.embedding_dim
 
 
 def get_qdrant_client() -> AsyncQdrantClient:
-    return AsyncQdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)
-
+    return AsyncQdrantClient(
+        host=settings.qdrant_host,
+        port=settings.qdrant_port,
+        api_key=settings.qdrant_api_key or None,
+        https=settings.qdrant_https,
+    )
 
 async def ensure_collection(client: AsyncQdrantClient) -> None:
     collections = await client.get_collections()
