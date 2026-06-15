@@ -9,21 +9,23 @@ Mini sistema RAG para busca semântica em receitas culinárias. O usuário digit
 | API | Python 3.12, FastAPI, SQLModel, Alembic |
 | Banco relacional | Postgres 16 |
 | Índice vetorial | Qdrant (payload indexes + filtros server-side) |
-| Embeddings / LLM | OpenAI `text-embedding-3-small` + `gpt-4o-mini` |
+| Embeddings | API OpenAI-compatible (Jina `jina-embeddings-v3`) |
+| LLM | Groq `llama-3.3-70b-versatile` |
 | Frontend | Next.js 15 (App Router), React 19, TanStack Query, Tailwind 4, Radix UI |
 | Infra | Docker Compose |
 
 ## Pré-requisitos
 
 - Docker e Docker Compose
-- Chave da OpenAI (`OPENAI_API_KEY`)
+- Chave da Groq (`GROQ_API_KEY`) — LLM
+- Chave da Jina (`EMBEDDING_API_KEY`) — embeddings
 
 ## Como rodar
 
 ```bash
 cd projeto-IA
 cp .env.example .env
-# Edite .env e adicione sua OPENAI_API_KEY
+# Edite .env e adicione GROQ_API_KEY (LLM) e EMBEDDING_API_KEY (Jina)
 
 docker compose up --build
 ```
@@ -93,13 +95,21 @@ id,titulo,categoria,tempo_minutos,ingredientes,modo_preparo,tags
 
 | Variável | Descrição | Padrão |
 |----------|-----------|--------|
-| `OPENAI_API_KEY` | Chave da API OpenAI | — |
-| `OPENAI_MODEL` | Modelo de geração | `gpt-4o-mini` |
-| `OPENAI_EMBEDDING_MODEL` | Modelo de embeddings | `text-embedding-3-small` |
-| `DATABASE_URL` | Postgres (asyncpg) | `...@postgres:5432/recipe` |
+| `GROQ_API_KEY` | Chave da API Groq (LLM) | — |
+| `LLM_MODEL` | Modelo de geração | `llama-3.3-70b-versatile` |
+| `EMBEDDING_API_BASE` | Base do endpoint de embeddings | `https://api.jina.ai/v1` |
+| `EMBEDDING_API_KEY` | Chave da API de embeddings | — |
+| `EMBEDDING_MODEL` | Modelo de embeddings | `jina-embeddings-v3` |
+| `EMBEDDING_DIM` | Dimensão do vetor | `1024` |
+| `DATABASE_URL` | Postgres (aceita `postgresql://`, normaliza p/ asyncpg) | `...@postgres:5432/recipe` |
 | `QDRANT_HOST` | Host do Qdrant | `qdrant` |
 | `QDRANT_PORT` | Porta do Qdrant | `6333` |
+| `QDRANT_API_KEY` | API key do Qdrant (Qdrant Cloud) | — |
+| `QDRANT_HTTPS` | Usar HTTPS no Qdrant (cloud = `true`) | `false` |
+| `CORS_ORIGINS` | Origens liberadas (separadas por vírgula) | `http://localhost:3000` |
 | `NEXT_PUBLIC_API_URL` | URL da API para o frontend | `http://localhost:5000` |
+
+> Deploy em produção (Vercel + Render): veja **[DEPLOY.md](DEPLOY.md)**.
 
 ---
 

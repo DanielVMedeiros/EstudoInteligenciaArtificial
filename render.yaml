@@ -1,0 +1,67 @@
+# Render Blueprint — provisiona o backend (Docker) + Postgres gerenciado.
+# Importe em: Render Dashboard → New → Blueprint → aponte para este repo.
+#
+# ✅ MEMÓRIA: com os embeddings via API (Jina), o backend NÃO carrega mais
+# torch/sentence-transformers. Cabe folgado no plano `free` (512 MB).
+# Limitação do free: "spin down" após 15 min de inatividade (primeira
+# requisição depois disso demora ~30-60s pra acordar).
+#
+# ⚠️ POSTGRES FREE: expira 30 dias após a criação e os dados são apagados.
+# Para algo que precise persistir, suba para um plano pago.
+
+databases:
+  - name: receitas-db
+    plan: free
+    databaseName: recipe
+    user: recipe
+
+services:
+  - type: web
+    name: receitas-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon        # use a MESMA região do banco
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Postgres injetado automaticamente (config.py normaliza p/ asyncpg)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: receitas-db
+          property: connectionString
+
+      # LLM (Groq) — cole sua chave no dashboard
+      - key: GROQ_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: llama-3.3-70b-versatile
+
+      # Embeddings via API OpenAI-compatible (Jina por padrão).
+      # Para trocar de provider, mude base/model/dim (ex.: OpenAI =
+      # base https://api.openai.com/v1, model text-embedding-3-small, dim 1536).
+      - key: EMBEDDING_API_BASE
+        value: https://api.jina.ai/v1
+      - key: EMBEDDING_MODEL
+        value: jina-embeddings-v3
+      - key: EMBEDDING_DIM
+        value: "1024"
+      - key: EMBEDDING_API_KEY      # cole sua chave Jina no dashboard
+        sync: false
+
+      # Qdrant Cloud — preencha host e api key no dashboard
+      - key: QDRANT_HOST
+        sync: false
+      - key: QDRANT_PORT
+        value: "6333"
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_HTTPS
+        value: "true"
+      - key: QDRANT_COLLECTION
+        value: receitas
+
+      # CORS — cole aqui a URL do front na Vercel (separe por vírgula se +1)
+      - key: CORS_ORIGINS
+        sync: false

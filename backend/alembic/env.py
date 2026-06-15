@@ -1,5 +1,4 @@
 import asyncio
-import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -9,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
 import app.models  # noqa: F401 — populate SQLModel metadata
+from app.config import settings
 
 config = context.config
 
@@ -17,11 +17,9 @@ if config.config_file_name is not None:
 
 target_metadata = SQLModel.metadata
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://recipe:recipe@localhost:5432/recipe",
-)
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
+# settings.database_url já vem normalizado para o driver asyncpg
+# (provedores gerenciados entregam 'postgresql://...').
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 
 def do_run_migrations(connection: Connection) -> None:

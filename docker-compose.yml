@@ -32,10 +32,13 @@ services:
     environment:
       GROQ_API_KEY: ${GROQ_API_KEY}
       LLM_MODEL: ${LLM_MODEL:-llama-3.3-70b-versatile}
+      EMBEDDING_API_BASE: ${EMBEDDING_API_BASE:-https://api.jina.ai/v1}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-jina-embeddings-v3}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
       DATABASE_URL: postgresql+asyncpg://recipe:recipe@postgres:5432/recipe
       QDRANT_HOST: qdrant
       QDRANT_PORT: "6333"
-      HF_HOME: /opt/models
     depends_on:
       postgres:
         condition: service_healthy
